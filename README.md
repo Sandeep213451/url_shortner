@@ -1,106 +1,145 @@
-# URL Shortener — Laravel Application
+URL Shortner — Laravel Application
 
-A role-based URL shortener service built with PHP Laravel 12 and MySQL.
+A multi-company, role-based URL shortener service built with PHP Laravel 12 and MySQL.
 
-## Roles
+------------------------------------------------------------
 
-| Role       | Can Create URLs | Can View URLs                        | Can Invite         |
-|------------|-----------------|--------------------------------------|--------------------|-
-| SuperAdmin | ❌              | ✅ (All Companies)                   | ✅ (Admin only)    |
-| Admin      | ✅              | ✅ (Their Company)                   | ✅ (Admin, Member) |
-| Member     | ✅              | ✅ (Own URLs Only)                   | ❌                  |
+SUMMARY
 
-## Local Setup
+This application allows users to generate publicly accessible short URLs.
 
-### Prerequisites
+The system supports:
+- Multiple Companies
+- Multiple Users per Company
+- Roles:
+  • SuperAdmin
+  • Admin
+  • Member
 
+------------------------------------------------------------
+
+TECH STACK
+
+- PHP Laravel 12
+- MySQL
+- Blade (Simple HTML)
+- Laravel session-based authentication
+
+------------------------------------------------------------
+
+ROLES & PERMISSIONS
+
+SuperAdmin
+- Cannot create short URLs
+- Can view all URLs (all companies)
+- Can invite Admin in a new company
+
+Admin
+- Can create short URLs
+- Can view URLs in their own company only
+- Can invite Admin or Member in their own company
+
+Member
+- Can create short URLs
+- Can view only their own created URLs
+- Cannot invite users
+
+------------------------------------------------------------
+
+AUTHENTICATION & AUTHORIZATION
+
+- Roles: SuperAdmin, Admin, Member
+- SuperAdmin created using Database Seeder
+- Users can log in and log out
+- Middleware and role checks used for authorization
+
+------------------------------------------------------------
+
+INVITATION SYSTEM
+
+SuperAdmin:
+- Invites Admin
+- Creates new Company during invitation
+
+Admin:
+- Invites Admin or Member
+- Restricted to own company
+
+Member:
+- No invitation permissions
+
+------------------------------------------------------------
+
+URL SHORTNER FEATURES
+
+URL Creation:
+- Admin → Allowed
+- Member → Allowed
+- SuperAdmin → Not Allowed
+
+URL Visibility:
+- SuperAdmin → All companies
+- Admin → Own company only
+- Member → Own URLs only
+
+Public Redirection:
+- All short URLs are publicly accessible
+- Automatically redirect to original URL
+
+------------------------------------------------------------
+
+LOCAL SETUP
+
+Prerequisites:
 - PHP 8.2+
 - Composer
 - MySQL 5.7+ or MariaDB
 
-### Steps
+Installation Steps:
 
-```bash
-# 1. Clone the repository
-git clone <your-repo-url>
-cd url_shortner
+1. git clone <your-github-repo-url>
+2. cd url_shortner
+3. composer install
+4. cp .env.example .env
+5. php artisan key:generate
+6. Configure DB_DATABASE, DB_USERNAME, DB_PASSWORD
+7. php artisan migrate
+8. php artisan db:seed
 
-# 2. Install PHP dependencies
-composer install
+SuperAdmin Credentials:
+Email: superadmin@gmail.com
+Password: password
 
-# 3. Copy environment file
-cp .env.example .env
-
-# 4. Generate application key
-php artisan key:generate
-
-# 5. Configure database connection in .env
-# Set DB_DATABASE, DB_USERNAME, DB_PASSWORD to match your MySQL setup
-
-# 6. Run database migrations
-php artisan migrate
-
-# 7. Seed the SuperAdmin account
-php artisan db:seed
-```
-
-### SuperAdmin Login Credentials
-
-| Field    | Value                     |
-|----------|---------------------------|
-| Email    | superadmin@gmail.com      |
-| Password | password                  |
-
-### Run the Development Server
-
-```bash
+Run Server:
 php artisan serve
-```
 
-Then open [http://localhost:8000](http://localhost:8000) in your browser.
+Open:
+http://localhost:8000
 
-### Run Tests
+------------------------------------------------------------
 
-```bash
+RUN TESTS
+
 php artisan test
-```
 
-Expected output: **11 tests, 24 assertions — all passing**.
+Tests Cover:
+- Admin and Member can create short URLs
+- SuperAdmin cannot create short URLs
+- Admin sees only company URLs
+- Member sees only own URLs
+- Public redirection works
 
-> Note: Tests use an in-memory SQLite database (configured in `phpunit.xml`) so no MySQL setup is required to run tests.
+Tests use in-memory SQLite (phpunit.xml).
 
-## Project Structure
+------------------------------------------------------------
 
-```
-app/
-  Http/Controllers/
-    Auth/LoginController.php        # Login / Logout
-    InvitationController.php        # Invite new team members
-    ShortUrlController.php          # Create & list short URLs
-    RedirectController.php          # Resolve short URL → redirect
-  Models/
-    User.php                        # Roles, constants, relationships
-    Company.php                     # Company model
-    ShortUrl.php                    # Short URL model
-database/
-  migrations/                       # Schema definitions
-  seeders/DatabaseSeeder.php        # Creates SuperAdmin via raw SQL
-resources/views/
-  layouts/app.blade.php             # Main layout with topbar
-  auth/login.blade.php              # Login form
-  short_urls/index.blade.php        # URL list (role-filtered)
-  short_urls/create.blade.php       # Create form (Admin/Member only)
-  invite.blade.php                  # Invite form
-tests/Feature/
-  UrlRestrictionTest.php            # Role restriction + public access tests
-  InvitationRestrictionTest.php     # Invitation restriction tests
-```
+AI USAGE DISCLOSURE
 
-## AI Usage
+Used ChatGPT for:
+- Laravel role-based authorization clarification
+- Eloquent relationship understanding
+- Test structuring guidance
 
-Used **Antigravity (Google DeepMind)** for:
-- Laravel validation syntax for URL and invitation form requests
-- Understanding and writing Eloquent `hasMany` / `belongsTo` relationships between `Company`, `User`, and `ShortUrl` models
-- Writing PHPUnit feature test structure using `actingAs()`, `assertDatabaseHas()`, and `RefreshDatabase`
-- Debugging missing controller and view files during development
-- Generating the `DatabaseSeeder` raw SQL insert for the SuperAdmin account
+Used only for syntax lookup and debugging.
+Core logic and implementation done independently.
+
